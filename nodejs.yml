@@ -1,35 +1,28 @@
-name: Node.js CI  # Name of the workflow
+name: CI for Node.js Express API
 
 on:
   push:
-    branches:
-      - main       # Runs when code is pushed to the 'main' branch
   pull_request:
-    branches:
-      - main       # Runs when a pull request targets the 'main' branch
 
 jobs:
-  build:
-    runs-on: ubuntu-latest   # GitHub provides an Ubuntu virtual machine to run the job
+  build-and-test:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]   # Tests will run using Node.js 16 and 18
+        node-version: [16.x, 18.x]
 
     steps:
-      - name: Checkout repository bringing code here
-        uses: actions/checkout@v4    # Step 1: Fetch the repository’s code
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3  # Step 2: Install Node.js
-        with:
-          node-version: ${{ matrix.node-version }}  # Use each version from the matrix
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies mentioned in package lock file
-        run: npm install             # Step 3: Install project dependencies
+    - name: Install dependencies
+      run: npm install
 
-      - name: Ensure Jest is Executable
-        run: chmod +x node_modules/.bin/jest  # Step 4: Give Jest permission to run (Linux requirement)
-
-      - name: Run tests
-        run: npm test                # Step 5: Run Jest tests to verify everything works
+    - name: Run tests with Jest
+      run: npm test
