@@ -1,0 +1,35 @@
+name: Node.js CI   # Name of the workflow
+
+on:
+  push:
+    branches:
+      - main       # Run when code is pushed to 'main'
+  pull_request:
+    branches:
+      - main       # Run when a PR is opened targeting 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest    # Use the latest Ubuntu system
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]   # Run tests on both Node 16 and 18
+
+    steps:
+      - name: Checkout repository bringing code here
+        uses: actions/checkout@v4    # Step 1: Get your code
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3  # Step 2: Setup Node.js environment
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies mentioned in package lock file
+        run: npm install             # Step 3: Install dependencies
+
+      - name: Ensure Jest is Executable
+        run: chmod +x node_modules/.bin/jest  # Make Jest runnable (on Linux)
+
+      - name: Run tests
+        run: npm test                # Step 4: Run Jest tests
