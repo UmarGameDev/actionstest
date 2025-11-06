@@ -1,0 +1,35 @@
+name: Node.js CI  # Name of the workflow
+
+on:
+  push:
+    branches:
+      - main       # Runs when code is pushed to the 'main' branch
+  pull_request:
+    branches:
+      - main       # Runs when a pull request targets the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   # GitHub provides an Ubuntu virtual machine to run the job
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]   # Tests will run using Node.js 16 and 18
+
+    steps:
+      - name: Checkout repository bringing code here
+        uses: actions/checkout@v4    # Step 1: Fetch the repository’s code
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3  # Step 2: Install Node.js
+        with:
+          node-version: ${{ matrix.node-version }}  # Use each version from the matrix
+
+      - name: Install dependencies mentioned in package lock file
+        run: npm install             # Step 3: Install project dependencies
+
+      - name: Ensure Jest is Executable
+        run: chmod +x node_modules/.bin/jest  # Step 4: Give Jest permission to run (Linux requirement)
+
+      - name: Run tests
+        run: npm test                # Step 5: Run Jest tests to verify everything works
